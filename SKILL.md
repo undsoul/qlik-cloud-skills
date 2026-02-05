@@ -1,15 +1,17 @@
 ---
 name: qlik-cloud
-description: Complete Qlik Cloud analytics platform integration with 37 tools. Health checks, search, app management, reloads, natural language queries (Insight Advisor), automations, AutoML, Qlik Answers AI, data alerts, spaces, users, licenses, data files, and lineage. Use when user asks about Qlik, Qlik Cloud, Qlik Sense apps, analytics dashboards, data reloads, or wants to query business data using natural language.
+description: Complete Qlik analytics platform integration supporting both Qlik Cloud and Qlik Sense Enterprise on Windows (on-premise). 37+ tools covering health checks, search, app management, reloads, natural language queries (Insight Advisor), automations, AutoML, Qlik Answers AI, data alerts, spaces/streams, users, licenses, and lineage. Use when user asks about Qlik, Qlik Cloud, Qlik Sense apps, analytics dashboards, data reloads, or wants to query business data.
 ---
 
-# Qlik Cloud Skill
+# Qlik Skill
 
-Complete OpenClaw integration for Qlik Cloud — 37 tools covering the full platform.
+Complete OpenClaw integration for **Qlik Cloud** and **Qlik Sense Enterprise on Windows (On-Premise)**.
 
-## Setup
+## 🚀 Quick Setup
 
-Add credentials to TOOLS.md:
+### Qlik Cloud
+
+Add to TOOLS.md:
 
 ```markdown
 ### Qlik Cloud
@@ -19,91 +21,120 @@ Add credentials to TOOLS.md:
 
 Get an API key: Qlik Cloud → Profile icon → Profile settings → API keys → Generate new key
 
-## ⚡ When to Use What
+### Qlik Sense Enterprise (On-Premise)
+
+Add to TOOLS.md:
+
+```markdown
+### Qlik Sense On-Premise
+- Server URL: https://qlik-server.company.local
+- Certificate Path: /path/to/client.pem
+- Key Path: /path/to/client_key.pem
+- Virtual Proxy: (optional)
+```
+
+**Or use header authentication:**
+
+```markdown
+### Qlik Sense On-Premise
+- Server URL: https://qlik-server.company.local
+- User Directory: DOMAIN
+- User ID: username
+- Virtual Proxy: (optional)
+```
+
+## Environment Variables
+
+| Variable | Platform | Description |
+|----------|----------|-------------|
+| `QLIK_TENANT` | Cloud | Tenant URL (e.g., `https://company.eu.qlikcloud.com`) |
+| `QLIK_API_KEY` | Cloud | API key from profile settings |
+| `QLIK_SERVER` | On-Prem | Server URL (e.g., `https://qlik.company.local`) |
+| `QLIK_CERT` | On-Prem | Path to client certificate (PEM) |
+| `QLIK_KEY` | On-Prem | Path to client key (PEM) |
+| `QLIK_USER_DIRECTORY` | On-Prem | User directory for header auth |
+| `QLIK_USER_ID` | On-Prem | User ID for header auth |
+| `QLIK_VIRTUAL_PROXY` | On-Prem | Virtual proxy prefix (optional) |
+
+## ⚡ Platform Comparison
+
+| Feature | Cloud | On-Premise |
+|---------|-------|------------|
+| Apps & Reloads | ✅ | ✅ |
+| Spaces / Streams | ✅ Spaces | ✅ Streams |
+| Users & Governance | ✅ | ✅ |
+| Health Check | ✅ | ✅ |
+| Insight Advisor (NL Query) | ✅ REST API | ⚠️ Engine API only |
+| Automations | ✅ | ❌ |
+| AutoML | ✅ | ❌ |
+| Qlik Answers | ✅ | ❌ |
+| Data Alerts | ✅ | ❌ |
+| Lineage (QRI) | ✅ | ❌ |
+| Managed Datasets | ✅ | ❌ |
+
+## 🔧 When to Use What
 
 | You Want... | Use This | Example |
 |-------------|----------|---------|
-| **Actual data values** (KPIs, numbers, trends) | `qlik-insight.sh` | "what is total sales", "which store has lowest stock" |
+| **Actual data values** (KPIs, numbers, trends) | `qlik-insight.sh` | "what is total sales" |
 | **App structure** (field names, tables) | `qlik-app-fields.sh` | Understanding data model |
 | **Refresh data** | `qlik-reload.sh` | Trigger reload before querying |
 | **Find apps** | `qlik-search.sh` or `qlik-apps.sh` | Locate app by name |
-
-**🚨 Decision Tree:**
-
-```
-User asks about data (numbers, KPIs, trends)?
-  └─ YES → Use qlik-insight.sh
-           └─ Response has 'narrative' or 'data'? 
-              └─ YES → Return the results
-              └─ NO → Try rephrasing, check drillDownLink
-  └─ NO (structure/metadata) → Use qlik-app-fields.sh
-```
-
-**Key insight:** `qlik-app-fields.sh` returns **metadata** (structure), NOT actual data. To get real numbers, always use `qlik-insight.sh` (Insight Advisor).
+| **Test connectivity** | `qlik-health.sh` | Verify setup |
 
 ## Quick Reference
 
-All scripts: `QLIK_TENANT="https://..." QLIK_API_KEY="..." bash scripts/<script>.sh [args]`
+### Core Operations (Both Platforms)
 
-### Core Operations
 | Script | Description | Args |
 |--------|-------------|------|
 | `qlik-health.sh` | Health check / connectivity test | — |
-| `qlik-tenant.sh` | Get tenant & user info | — |
-| `qlik-search.sh` | Search all resources (returns `resourceId`) | `"query"` |
-| `qlik-license.sh` | License info & usage | — |
+| `qlik-apps.sh` | List apps | `[--space ID] [--limit n]` |
+| `qlik-reload.sh` | Trigger app reload | `<app-id> [--partial]` |
+| `qlik-reload-status.sh` | Check reload status | `<reload-id>` |
+| `qlik-reload-failures.sh` | Recent failed reloads | `[days] [limit]` |
 
-### Apps
+### Cloud-Specific
+
 | Script | Description | Args |
 |--------|-------------|------|
-| `qlik-apps.sh` | List apps (supports space filtering) | `[--space personal\|spaceId] [--limit n]` |
+| `qlik-tenant.sh` | Get tenant & user info | — |
+| `qlik-search.sh` | Search all resources | `"query"` |
+| `qlik-license.sh` | License info & usage | — |
+| `qlik-insight.sh` | Natural language queries ⭐ | `"question" [app-id]` |
+| `qlik-spaces.sh` | List spaces | `[limit]` |
+| `qlik-automations.sh` | List automations | `[limit]` |
+| `qlik-answers-ask.sh` | Ask AI assistant | `<id> "question"` |
+| `qlik-alerts.sh` | List data alerts | `[limit]` |
+
+### Apps
+
+| Script | Description | Args |
+|--------|-------------|------|
 | `qlik-app-get.sh` | Get app details | `<app-id>` |
-| `qlik-app-create.sh` | Create new app | `"name" [space-id] [description]` |
+| `qlik-app-create.sh` | Create new app | `"name" [space-id]` |
 | `qlik-app-delete.sh` | Delete app | `<app-id>` |
-| `qlik-app-fields.sh` | Get fields & tables (metadata only, not data values) | `<app-id>` |
+| `qlik-app-fields.sh` | Get fields & tables | `<app-id>` |
 | `qlik-app-lineage.sh` | Get app data sources | `<app-id>` |
 
 ### Reloads
+
 | Script | Description | Args |
 |--------|-------------|------|
-| `qlik-reload.sh` | Trigger app reload | `<app-id>` |
+| `qlik-reload.sh` | Trigger app reload | `<app-id> [--partial]` |
 | `qlik-reload-status.sh` | Check reload status | `<reload-id>` |
 | `qlik-reload-cancel.sh` | Cancel running reload | `<reload-id>` |
 | `qlik-reload-history.sh` | App reload history | `<app-id> [limit]` |
 | `qlik-reload-failures.sh` | Recent failed reloads | `[days] [limit]` |
 
-### Monitoring
-| Script | Description | Args |
-|--------|-------------|------|
-| `qlik-duplicates.sh` | Find duplicate apps (same name) | `[limit]` |
-
-### Insight Advisor ⭐ (Natural Language Queries)
-| Script | Description | Args |
-|--------|-------------|------|
-| `qlik-insight.sh` | Ask questions in plain language, get **real data values** back | `"question" [app-id]` |
-
-**This is the primary tool for getting actual data!** Ask naturally:
-- "what is total sales"
-- "which stores have lowest availability"
-- "show stock count by region"
-- "items predicted out of stock"
-
-**Important:**
-
-1. **Use `resourceId`** (UUID format) from search results — NOT the item `id`
-
-2. **Check response for `narrative` and/or `data`** — If both missing, try rephrasing
-
-3. **For data questions, use insight.sh NOT fields.sh** — `fields.sh` = metadata, `insight.sh` = actual values
-
 ### Users & Governance
+
 | Script | Description | Args |
 |--------|-------------|------|
 | `qlik-users-search.sh` | Search users | `"query" [limit]` |
 | `qlik-user-get.sh` | Get user details | `<user-id>` |
-| `qlik-spaces.sh` | List all spaces (shared, managed, data) | `[limit]` |
 
-### ⚠️ Personal Space
+## 📍 Personal Space (Cloud Only)
 
 **Personal space is VIRTUAL in Qlik Cloud** — it does NOT appear in the `/spaces` API!
 
@@ -115,101 +146,66 @@ bash scripts/qlik-spaces.sh
 bash scripts/qlik-apps.sh --space personal
 ```
 
-Space types in Qlik Cloud:
-- **personal** — Virtual, user's private apps (use `--space personal`)
-- **shared** — Team collaboration spaces
-- **managed** — Governed spaces with publishing workflow
-- **data** — Data storage spaces
+## 🔥 Insight Advisor (Natural Language Queries)
 
-### Data Files & Lineage
-| Script | Description | Args |
-|--------|-------------|------|
-| `qlik-datafiles.sh` | List uploaded data files | `[space-id] [limit]` |
-| `qlik-datafile.sh` | Get data file details | `<file-id>` |
-| `qlik-datasets.sh` | List managed datasets* | `[space-id] [limit]` |
-| `qlik-dataset-get.sh` | Get managed dataset details* | `<dataset-id>` |
-| `qlik-lineage.sh` | Data lineage graph | `<secure-qri> [direction] [levels]` |
+**This is the primary tool for getting actual data!** Ask naturally:
+- "what is total sales"
+- "which stores have lowest availability"
+- "show stock count by region"
 
-*Managed datasets are available in Qlik Cloud.
+```bash
+# Query specific app
+bash scripts/qlik-insight.sh "revenue by region" "app-uuid-here"
+```
 
-### Automations
-| Script | Description | Args |
-|--------|-------------|------|
-| `qlik-automations.sh` | List automations | `[limit]` |
-| `qlik-automation-get.sh` | Get automation details | `<automation-id>` |
-| `qlik-automation-run.sh` | Run automation | `<automation-id>` |
-| `qlik-automation-runs.sh` | Automation run history | `<automation-id> [limit]` |
-
-### AutoML
-| Script | Description | Args |
-|--------|-------------|------|
-| `qlik-automl-experiments.sh` | List ML experiments | `[limit]` |
-| `qlik-automl-experiment.sh` | Experiment details | `<experiment-id>` |
-| `qlik-automl-deployments.sh` | List ML deployments | `[limit]` |
-
-### Qlik Answers (AI Assistant)
-| Script | Description | Args |
-|--------|-------------|------|
-| `qlik-answers-assistants.sh` | List AI assistants | `[limit]` |
-| `qlik-answers-ask.sh` | Ask assistant a question | `<assistant-id> "question" [thread-id]` |
-
-### Data Alerts
-| Script | Description | Args |
-|--------|-------------|------|
-| `qlik-alerts.sh` | List data alerts | `[limit]` |
-| `qlik-alert-get.sh` | Get alert details | `<alert-id>` |
-| `qlik-alert-trigger.sh` | Trigger alert evaluation | `<alert-id>` |
+**Important:** Use `resourceId` (UUID format) from search results — NOT the item `id`.
 
 ## Example Workflows
 
-### Check Environment
+### Cloud: Check Environment
 ```bash
+export QLIK_TENANT="https://company.eu.qlikcloud.com"
+export QLIK_API_KEY="your-api-key"
+
 bash scripts/qlik-health.sh
 bash scripts/qlik-tenant.sh
-bash scripts/qlik-license.sh
+```
+
+### On-Premise: Check Environment
+```bash
+export QLIK_SERVER="https://qlik.company.local"
+export QLIK_CERT="/path/to/client.pem"
+export QLIK_KEY="/path/to/client_key.pem"
+
+bash scripts/qlik-health.sh
+bash scripts/qlik-apps.sh
+```
+
+### On-Premise with Header Auth
+```bash
+export QLIK_SERVER="https://qlik.company.local"
+export QLIK_USER_DIRECTORY="DOMAIN"
+export QLIK_USER_ID="admin"
+export QLIK_VIRTUAL_PROXY="prefix"  # optional
+
+bash scripts/qlik-health.sh
 ```
 
 ### Find and Query an App
 ```bash
-# Search returns resourceId (UUID) — use this for all app operations
+# Search returns resourceId (UUID)
 bash scripts/qlik-search.sh "Sales"
-# Output: { "resourceId": "950a5da4-0e61-466b-a1c5-805b072da128", ... }
 
-# Use the resourceId for app operations
+# Use resourceId for operations
 bash scripts/qlik-app-get.sh "950a5da4-0e61-466b-a1c5-805b072da128"
-bash scripts/qlik-app-fields.sh "950a5da4-0e61-466b-a1c5-805b072da128"
-bash scripts/qlik-insight.sh "What were total sales last month?" "950a5da4-0e61-466b-a1c5-805b072da128"
-```
-
-### See App Data Sources
-```bash
-bash scripts/qlik-app-lineage.sh "950a5da4-0e61-466b-a1c5-805b072da128"
-# Returns: QVD files, Excel files, databases, etc.
+bash scripts/qlik-insight.sh "What were total sales?" "950a5da4-0e61-466b-a1c5-805b072da128"
 ```
 
 ### Reload Management
 ```bash
-bash scripts/qlik-reload.sh "abc-123"
+bash scripts/qlik-reload.sh "app-id"
 bash scripts/qlik-reload-status.sh "reload-id"
-bash scripts/qlik-reload-history.sh "abc-123"
-```
-
-### Natural Language Queries (Insight Advisor)
-```bash
-# Find apps that match your question
-bash scripts/qlik-insight.sh "show me sales trend"
-
-# Query specific app with UUID
-bash scripts/qlik-insight.sh "revenue by region" "950a5da4-0e61-466b-a1c5-805b072da128"
-```
-
-### Qlik Answers (AI)
-```bash
-# List available AI assistants
-bash scripts/qlik-answers-assistants.sh
-
-# Ask a question (creates thread automatically)
-bash scripts/qlik-answers-ask.sh "27c885e4-85e3-40d8-b5cc-c3e20428e8a3" "What products do you sell?"
+bash scripts/qlik-reload-failures.sh 7  # Last 7 days
 ```
 
 ## Response Format
@@ -218,21 +214,27 @@ All scripts output JSON:
 ```json
 {
   "success": true,
+  "platform": "cloud",
   "data": { ... },
-  "timestamp": "2026-02-04T12:00:00Z"
+  "timestamp": "2026-02-05T12:00:00Z"
 }
 ```
 
-## Environment Variables
+The `platform` field indicates whether the response is from `cloud` or `onprem`.
 
-**Required credentials** (add to TOOLS.md or set as environment variables):
+## On-Premise API Mapping
 
-- **QLIK_TENANT** — Your tenant URL (e.g., `https://company.eu.qlikcloud.com`)
-- **QLIK_API_KEY** — API key from Qlik Cloud profile settings
+| Cloud Concept | On-Premise Equivalent | API Path |
+|--------------|----------------------|----------|
+| Spaces | Streams | `/qrs/stream` |
+| `/api/v1/apps` | `/qrs/app` | QRS API |
+| `/api/v1/reloads` | `/qrs/reloadtask` | QRS API |
+| `/api/v1/users` | `/qrs/user` | QRS API |
+| Bearer token | Certificate / Header auth | X-Qlik-User |
 
 ## Cloud-Only Features
 
-The following features are **Qlik Cloud exclusive** (not available on Qlik Sense Enterprise on Windows):
+The following features are **Qlik Cloud exclusive**:
 
 - ⚙️ **Automations** — Low-code workflow automation
 - 🤖 **AutoML** — Machine learning experiments & deployments  
@@ -240,3 +242,4 @@ The following features are **Qlik Cloud exclusive** (not available on Qlik Sense
 - 🔔 **Data Alerts** — Threshold-based notifications
 - 🔗 **Lineage (QRI)** — Data flow visualization
 - 📊 **Managed Datasets** — Centralized data management
+- 🗣️ **Insight Advisor REST API** — Natural language queries (Engine API available on-prem)

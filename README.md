@@ -7,7 +7,7 @@ Complete Qlik integration with 37+ tools supporting **both Qlik Cloud and Qlik S
 - **Core**: Health checks, tenant/server info, search, licensing
 - **Apps**: List, create, delete, get details, inspect fields
 - **Reloads**: Trigger, monitor, cancel, view history, failure tracking
-- **Insight Advisor**: Natural language queries against your data ⭐ (Cloud only)
+- **Insight Advisor**: Natural language queries against your data ⭐
 - **Automations**: List, run, monitor automation workflows (Cloud only)
 - **AutoML**: Experiments and deployments (Cloud only)
 - **Qlik Answers**: AI assistants and Q&A (Cloud only)
@@ -24,12 +24,14 @@ Complete Qlik integration with 37+ tools supporting **both Qlik Cloud and Qlik S
 | Spaces / Streams | ✅ | ✅ |
 | Users & Governance | ✅ | ✅ |
 | Health Check | ✅ | ✅ |
-| Insight Advisor (NL) | ✅ | ⚠️ Engine API only |
+| Insight Advisor (NL) | ✅ | ✅* |
 | Automations | ✅ | ❌ |
 | AutoML | ✅ | ❌ |
 | Qlik Answers | ✅ | ❌ |
 | Data Alerts | ✅ | ❌ |
 | Lineage | ✅ | ❌ |
+
+*On-premise requires Insight Advisor Chat enabled in QMC
 
 ## Installation
 
@@ -113,7 +115,7 @@ bash scripts/qlik-health.sh
 # Search for apps
 bash scripts/qlik-search.sh "sales"
 
-# Natural language query (Cloud only)
+# Natural language query
 bash scripts/qlik-insight.sh "show revenue by region" "app-uuid"
 
 # Trigger app reload

@@ -64,13 +64,15 @@ Add to TOOLS.md:
 | Spaces / Streams | ✅ Spaces | ✅ Streams |
 | Users & Governance | ✅ | ✅ |
 | Health Check | ✅ | ✅ |
-| Insight Advisor (NL Query) | ✅ REST API | ⚠️ Engine API only |
+| Insight Advisor (NL Query) | ✅ REST API | ✅ REST API* |
 | Automations | ✅ | ❌ |
 | AutoML | ✅ | ❌ |
 | Qlik Answers | ✅ | ❌ |
 | Data Alerts | ✅ | ❌ |
 | Lineage (QRI) | ✅ | ❌ |
 | Managed Datasets | ✅ | ❌ |
+
+*On-premise Insight Advisor requires Insight Advisor Chat enabled in QMC (uses `/api/v1/nl/query`).
 
 ## 🔧 When to Use What
 
@@ -84,15 +86,20 @@ Add to TOOLS.md:
 
 ## Quick Reference
 
-### Core Operations (Both Platforms)
+### Core Operations (Both Platforms ✅)
 
 | Script | Description | Args |
 |--------|-------------|------|
 | `qlik-health.sh` | Health check / connectivity test | — |
 | `qlik-apps.sh` | List apps | `[--space ID] [--limit n]` |
+| `qlik-app-get.sh` | Get app details | `<app-id>` |
 | `qlik-reload.sh` | Trigger app reload | `<app-id> [--partial]` |
 | `qlik-reload-status.sh` | Check reload status | `<reload-id>` |
+| `qlik-reload-history.sh` | App reload history | `<app-id> [limit]` |
 | `qlik-reload-failures.sh` | Recent failed reloads | `[days] [limit]` |
+| `qlik-spaces.sh` | List spaces (Cloud) / streams (On-Prem) | `[limit]` |
+| `qlik-users-search.sh` | Search users | `"query" [limit]` |
+| `qlik-insight.sh` | Natural language queries ⭐ | `"question" [app-id]` |
 
 ### Cloud-Specific
 

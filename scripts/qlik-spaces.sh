@@ -1,7 +1,11 @@
 #!/bin/bash
 # Qlik Cloud Spaces Catalog
 # List all spaces with details
+#
 # Usage: qlik-spaces.sh [limit]
+#
+# NOTE: Personal space is VIRTUAL in Qlik Cloud and will NOT appear here!
+#       To list personal space apps, use: qlik-apps.sh --space personal
 
 set -euo pipefail
 
@@ -41,7 +45,20 @@ try:
             'ownerId': s.get('ownerId')
         })
     
-    print(json.dumps({'success': True, 'spaces': spaces, 'totalCount': len(spaces), 'timestamp': timestamp}, indent=2))
+    # Count by type
+    type_counts = {}
+    for s in spaces:
+        t = s.get('type', 'unknown')
+        type_counts[t] = type_counts.get(t, 0) + 1
+    
+    print(json.dumps({
+        'success': True, 
+        'spaces': spaces, 
+        'totalCount': len(spaces),
+        'byType': type_counts,
+        'note': 'Personal space is VIRTUAL and not listed here. Use qlik-apps.sh --space personal',
+        'timestamp': timestamp
+    }, indent=2))
 except Exception as e:
     print(json.dumps({'success': False, 'error': str(e), 'timestamp': timestamp}, indent=2))
     sys.exit(1)

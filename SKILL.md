@@ -56,7 +56,7 @@ All scripts: `QLIK_TENANT="https://..." QLIK_API_KEY="..." bash scripts/<script>
 ### Apps
 | Script | Description | Args |
 |--------|-------------|------|
-| `qlik-apps.sh` | List all apps | `[limit]` |
+| `qlik-apps.sh` | List apps (supports space filtering) | `[--space personal\|spaceId] [--limit n]` |
 | `qlik-app-get.sh` | Get app details | `<app-id>` |
 | `qlik-app-create.sh` | Create new app | `"name" [space-id] [description]` |
 | `qlik-app-delete.sh` | Delete app | `<app-id>` |
@@ -101,7 +101,25 @@ All scripts: `QLIK_TENANT="https://..." QLIK_API_KEY="..." bash scripts/<script>
 |--------|-------------|------|
 | `qlik-users-search.sh` | Search users | `"query" [limit]` |
 | `qlik-user-get.sh` | Get user details | `<user-id>` |
-| `qlik-spaces.sh` | List all spaces | `[limit]` |
+| `qlik-spaces.sh` | List all spaces (shared, managed, data) | `[limit]` |
+
+### ⚠️ Personal Space
+
+**Personal space is VIRTUAL in Qlik Cloud** — it does NOT appear in the `/spaces` API!
+
+```bash
+# ❌ WRONG: qlik-spaces.sh will NOT show personal space
+bash scripts/qlik-spaces.sh
+
+# ✅ CORRECT: Use qlik-apps.sh with --space personal
+bash scripts/qlik-apps.sh --space personal
+```
+
+Space types in Qlik Cloud:
+- **personal** — Virtual, user's private apps (use `--space personal`)
+- **shared** — Team collaboration spaces
+- **managed** — Governed spaces with publishing workflow
+- **data** — Data storage spaces
 
 ### Data Files & Lineage
 | Script | Description | Args |
